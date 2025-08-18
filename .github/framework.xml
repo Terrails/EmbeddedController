@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+  <remote name="cros"
+          fetch="https://chromium.googlesource.com"
+          review="https://chromium-review.googlesource.com">
+    <annotation name="public" value="true" />
+  </remote>
+  <remote name="chromium"
+          alias="cros"
+          fetch="https://chromium.googlesource.com/">
+    <annotation name="public" value="true" />
+  </remote>
+  <remote name="aosp"
+          fetch="https://android.googlesource.com"
+          review="https://android-review.googlesource.com">
+    <annotation name="public" value="true" />
+  </remote>
+  <remote name="framework"
+          fetch="https://github.com/FrameworkComputer">
+  </remote>
+  <remote name="terrails"
+          fetch="https://github.com/Terrails">
+  </remote>
+
+  <default revision="refs/heads/main"
+           remote="cros"
+           sync-j="8" />
+
+  <!-- Common projects for developing CrOS. -->
+  <project path="chromite/third_party/pyelftools"
+           name="chromiumos/third_party/pyelftools"
+           revision="refs/heads/chromeos-0.22"
+           groups="minilayout,paygen,firmware,buildtools">
+  </project>
+  <project path="src/scripts"
+           name="chromiumos/platform/crosutils"
+           groups="minilayout,paygen,firmware,buildtools,labtools" />
+
+  <project path="src/platform/ec"
+           name="EmbeddedController"
+           remote="terrails"
+           revision="lotus-lower-threshold-workflow"
+           groups="paygen,firmware" />
+  <project path="src/third_party/zephyr/cmsis"
+           name="chromiumos/third_party/zephyr/cmsis"
+           revision="4aa3ff8e4f8a21e31cd9831b943acb7a7cd56ac8"
+           groups="firmware,zephyr" />
+  <project path="src/third_party/zephyr/hal_stm32"
+           name="chromiumos/third_party/zephyr/hal_stm32"
+           revision="refs/heads/chromeos-main"
+           groups="firmware,zephyr" />
+  <project path="src/third_party/zephyr/main"
+           name="zephyr"
+           remote="framework"
+           revision="lotus-zephyr"
+           groups="firmware,zephyr" />
+  <project path="src/third_party/zephyr/nanopb"
+           name="chromiumos/third_party/zephyr/nanopb"
+           groups="firmware,zephyr" />
+  <project path="src/third_party/u-boot/files"
+           name="chromiumos/third_party/u-boot"
+           revision="upstream/next"
+           groups="fwsdk" />
+  <project path="src/chromium/depot_tools"
+           remote="chromium"
+           name="chromium/tools/depot_tools"
+           revision="84edf22d0e5bf3f9ae60714ed9789fd62f86cf2a"
+           groups="minilayout,paygen,firmware,buildtools,labtools" />
+</manifest>

@@ -1,0 +1,71 @@
+name: build lotus firmware
+
+on: push
+
+jobs:
+  build:
+    name: Build lotus
+    runs-on: [ubuntu-latest]
+
+    # See https://gist.github.com/Terrails/91173f63b2738c34cc04251abc0bacfe for more info
+    steps:
+      - name: Install build tools
+        run: |
+          sudo add-apt-repository ppa:deadsnakes/ppa
+          sudo apt update
+          sudo apt install build-essential libftdi1-dev gcc-arm-none-eabi repo swig python3.11-dev device-tree-compiler cmake file ninja-build python3.11-venv wget
+
+      - name: Setup Zephyr SDK
+        run: |
+          wget -P /tmp https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.16.5-1/zephyr-sdk-0.16.5-1_linux-x86_64.tar.xz
+          tar -x -f /tmp/zephyr-sdk-0.16.5-1_linux-x86_64.tar.xz -C /opt
+          /opt/zephyr-sdk-0.16.5-1/setup.sh -h -c -t all
+
+      - name: Checkout repository for manifest
+        uses: actions/checkout@v4
+        with:
+          path: repo
+
+      - name: Setup git repository
+        run: |
+          git config --global user.email test@user.com
+          git config --global user.name test
+
+          git init
+          cp ${{ github.workspace }}/repo/.github/framework.xml .
+
+          git add framework.xml
+          git commit -m "Add manifest"
+
+      - name: Initialize and sync repositories
+        run: |
+          repo init -u . -m framework.xml
+          repo sync
+
+      - name: Fix binman issue
+        run: |
+          sed -e 's/>=61.0/==68.2.2/' -i src/third_party/u-boot/files/tools/binman/pyproject.toml
+
+      - name: Install Python dependencies
+        run: |
+          python3.11 -m venv .
+          . ./bin/activate
+          pip3.11 install pyyaml pykwalify packaging pyelftools colorama src/platform/ec/zephyr/zmake src/third_party/u-boot/files/tools/binman
+
+      - name: Build lotus
+        run: |
+          . ./bin/activate
+          zmake -j4 build lotus   
+
+      - name: File sha256
+        run: sha256sum src/platform/ec/build/zephyr/lotus/output/ec.bin
+
+      - name: Generate artifact version
+        run: |
+          echo "VERSIONINFO=$(date -u +'%Y-%m-%d-%H-%M-%S')_$GITHUB_SHA" >> $GITHUB_ENV      
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lotus.${{ env.VERSIONINFO }}
+          path: src/platform/ec/build/zephyr/lotus/output
