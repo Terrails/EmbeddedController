@@ -39,7 +39,7 @@
   <project path="src/platform/ec"
            name="EmbeddedController"
            remote="terrails"
-           revision="lotus-lower-threshold-workflow"
+           revision="lotus-m2-module-x8-egpu"
            groups="paygen,firmware" />
   <project path="src/third_party/zephyr/cmsis"
            name="chromiumos/third_party/zephyr/cmsis"

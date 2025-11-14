@@ -839,7 +839,8 @@ int parse_gpu_eeprom(void)
 		case GPUCFG_TYPE_BATTERY:
 			break;
 		case GPUCFG_TYPE_PCIE:
-			gpu_pcie_configuration = gpu_read_buff[0];
+			//gpu_pcie_configuration = gpu_read_buff[0];
+			gpu_pcie_configuration = PCIE_8X1;
 			*host_get_memmap(EC_CUSTOMIZED_MEMMAP_GPU_CONTROL) =
 				(*host_get_memmap(EC_CUSTOMIZED_MEMMAP_GPU_CONTROL) & (~GPU_PCIE_MASK)) +
 				((gpu_pcie_configuration << 6) & GPU_PCIE_MASK);
@@ -1021,7 +1022,8 @@ static enum ec_status ec_response_get_gpu_config(struct host_cmd_handler_args *a
 		return EC_RES_UNAVAILABLE;
 	}
 
-	r->gpu_pcie_config = gpu_pcie_configuration;
+	// r->gpu_pcie_config = gpu_pcie_configuration;
+	r->gpu_pcie_config = PCIE_8X1;
 	r->gpu_vendor = gpu_vendor;
 
 	args->response_size = sizeof(*r);
